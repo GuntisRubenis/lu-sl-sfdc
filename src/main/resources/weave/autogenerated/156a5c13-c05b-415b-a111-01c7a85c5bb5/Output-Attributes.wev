@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_156a5c13_c05b_415b_a111_01c7a85c5bb5_Output_Attributes = {|
+  headers?: { _?: String }, 
+  statusCode?: Number
+|} {"typeAlias": "ResponseAttributes",
+"typeId": "com.mulesoft.connector.sap.s4hana.api.ResponseAttributes"}
+

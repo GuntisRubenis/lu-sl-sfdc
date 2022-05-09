@@ -1,0 +1,96 @@
+#%RAML 1.0
+title: lu-sl-sfdc
+description: System API for Salesforce
+mediaType: [application/json]
+protocols: [HTTPS]
+version: v1
+
+
+types:
+
+/getAllAccounts:
+  get:
+    displayName: retrieve Accounts
+    queryParameters: 
+      id:
+        description: Account Business Partner Id
+        type: string
+        required: false 
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+
+/getAllContacts:
+  get:
+    displayName: Retrieve Contacts
+    queryParameters: 
+      id:
+        description: Contact Id
+        type: string
+        required: false 
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+
+
+/createAccount:
+  post:
+    displayName: Cretae Account
+    responses:
+      200:
+        body:
+          application/json:
+            example: 
+
+/updateAccount:
+  /{id}:
+    patch:
+      displayName: Update Account
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+
+/deleteAccount:
+  /{id}:
+    delete:
+      displayName: Delete Account
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+
+/createContact:
+  post:
+    displayName: Cretate Account Conatact
+    responses:
+      200:
+        body:
+          application/json:
+            example: 
+
+/updateConatact:
+  /{id}:
+    patch: 
+      displayName: Update Contact
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+
+/deleteContact:
+  /{id}:
+    delete:
+      displayName: Delete Conatact
+      responses:
+        200:
+          body:
+            application/json:
+              example:   

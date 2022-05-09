@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs" 
+	xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd 
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/sqs http://www.mulesoft.org/schema/mule/sqs/current/mule-sqs.xsd
+		http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	
+	<sub-flow name="http-listener-init-subflow" doc:id="fdb72cce-b83f-4222-8433-bad3f993b183">
+		<ee:transform doc:name="Set Additional Attributes" doc:id="bba047cf-2c30-48d9-ab24-ef4cef4a72e9">
+			<ee:variables>
+				<ee:set-variable variableName="additionalAttributes"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"resource": attributes.relativePath,
+	"httpMethod": attributes.method,
+	"scheme": attributes.scheme
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set Body" doc:id="8aaf4752-ace4-47fc-a3d8-fa7c920393de" variableName="payloadBody" mimeType="text/plain" />
+		<flow-ref doc:name="common-initiation-subflow" doc:id="8c26b15c-9919-4183-922d-2a4965a94910" name="common-initiation-subflow"/>
+	</sub-flow>
+	
+	<sub-flow name="http-listener-finalize-subflow" doc:id="31f1b489-1704-45b0-952c-24ae1fe3ac8a" >
+		<flow-ref doc:name="common-finalize-subflow" doc:id="713a88bc-7cfc-4417-b335-e0137524985b" name="common-finalize-subflow"/>
+	</sub-flow>
+
+</mule>

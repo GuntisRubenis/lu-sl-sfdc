@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="log-apikit-entry" doc:id="87e981f4-be7b-40fd-83ea-f05d22d837f3" >
+		<set-variable value="#[if (attributes.headers.'transaction-start-time' != null) attributes.headers.'transaction-start-time' as DateTime else now()]" doc:name="transactionStartTime" doc:id="445f15ba-7b57-4411-8e29-80752e50204b" variableName="transactionStartTime"/>
+		<ee:transform doc:name="Setup Variables" doc:id="08e3f788-4d99-48bb-bb43-98ae949dad52" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/common_functionality/log-apikit-entry-var-jsonLogger.dwl" variableName="jsonLogger" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logging JSON Var" doc:id="1e502568-2352-4e2c-8fa8-d3d1d7182978" message="#[vars.jsonLogger]"/>
+	</sub-flow>
+	<sub-flow name="log-apikit-exit" doc:id="0e9d190f-2f7d-4505-b577-598883e2994f" >
+		<ee:transform doc:name="Setup Variables" doc:id="cbcd24f6-38b0-47bc-a2e0-6246768cac2b" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/common_functionality/log-apikit-exit-var-jsonLogger.dwl" variableName="jsonLogger" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logging JSON Var" doc:id="55241935-5a65-4371-8930-0318e57bcf45" message="#[vars.jsonLogger]"/>
+		<remove-variable doc:name="transactionStartTime" doc:id="5e7f8b61-27b5-4a5f-ab3a-da0d1ed64412" variableName="transactionStartTime"/>
+	</sub-flow>
+	<sub-flow name="log-app-flow-entry" doc:id="c0d79429-c92f-4b4e-a278-d84fed1ef926" >
+		<set-variable value="#[now()]" doc:name="flowStartTime" doc:id="070f7123-935c-4f29-b07d-a75ed65ff9cf" variableName="flowStartTime"/>
+		<ee:transform doc:name="Setup Variables" doc:id="25115a7c-2e58-4f5e-a7b8-c45fea759f3a" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="jsonLogger" ><![CDATA[%dw 2.0
+output application/json
+var flowStartTime = vars.flowStartTime
+---
+{
+	"appName": app.name,
+	"transactionStage": "RESOURCE-ENTRY",
+	"transactionId": correlationId,
+	("flowName":flow.name) if (!isEmpty(flow.name)),
+	"flowStartTime": flowStartTime,
+	("additionalInfo": vars.additionalInfo) if (!isEmpty(vars.additionalInfo))
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="jsonLogger" doc:id="bef02afe-3673-4c2a-8ac5-3a26a8187f7d" message="#[vars.jsonLogger]"/>
+	</sub-flow>
+	<sub-flow name="log-app-flow-exit" doc:id="76a1ac59-593f-408d-9919-9ba64def9740" >
+		<ee:transform doc:name="Setup Variables" doc:id="d1117940-65e6-4d3d-a25a-773c910f1763" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="jsonLogger" ><![CDATA[%dw 2.0
+output application/json
+var flowEndTime = now()
+---
+{
+	"appName": app.name,
+	"transactionStage": "RESOURCE-EXIT",
+	"transactionId": correlationId,
+	("flowName":vars.flowName) if (!isEmpty(vars.flowName)),
+	"flowStartTime": vars.flowStartTime,
+	"flowEndTime": flowEndTime,
+	"flowLatency": (flowEndTime as Number {unit: "milliseconds"}) - (vars.flowStartTime as Number {unit: "milliseconds"}),
+	("additionalInfo": vars.additionalInfo) if (!isEmpty(vars.additionalInfo))
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="jsonLogger" doc:id="4e60cd18-f745-41d0-b673-d3a4a2dfaae2" message="#[vars.jsonLogger]" />
+		<remove-variable doc:name="flowStartTime" doc:id="4bcf0082-2ce6-4163-97f1-69f62c1be016" variableName="flowStartTime" />
+	</sub-flow>
+</mule>

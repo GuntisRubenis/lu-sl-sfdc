@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd 
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+	<sub-flow name="common-initiation-subflow">
+		<ee:transform doc:name="Initialize Variables" doc:id="ba7c6f7f-66b2-4a34-95f1-73fb64d18f39">
+			<ee:variables>
+				<ee:set-variable variableName="processingStage" ><![CDATA[%dw 2.0
+output application/java
+---
+'BEGIN']]></ee:set-variable>
+				<ee:set-variable variableName="transactionStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+'Init']]></ee:set-variable>
+				<ee:set-variable variableName="originalPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+if ( (attributes.method == "GET") or (attributes.method == "DELETE") ) "No payload set." else payload]]></ee:set-variable>
+				<ee:set-variable variableName="logLevel" ><![CDATA[%dw 2.0
+output application/java
+---
+'INFO']]></ee:set-variable>
+				<ee:set-variable resource="dwl/common_functionality/inbound-attributes.dwl" variableName="inboundAttributes" />
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Generate Default Headers" doc:id="54fe4bb5-5132-47b9-8cb0-61157f4a22f3">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwl/common_functionality/request-headers-var.dwl" variableName="requestHeaders" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="common-logger-subflow" doc:id="550890bb-ff88-48ae-a505-0b7382f11f13" name="common-logger-subflow"/>
+		<ee:transform doc:name="Init Required Variables" doc:id="ee495dfe-0379-4375-a388-96d3d5e4ca53" >
+			<ee:variables >
+				<ee:set-variable variableName="transactionStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+'InProgress']]></ee:set-variable>
+				<ee:set-variable variableName="processingStage" ><![CDATA[%dw 2.0
+output application/java
+---
+'InProgress']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+
+	<sub-flow name="common-finalize-subflow">
+		<ee:transform doc:name="Init Required Variables" doc:id="5d6c16c6-d3d9-4919-815f-7f895fa50a4f" >
+			<ee:variables >
+				<ee:set-variable variableName="transactionStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+if(vars.error != null) 
+	'FAILURE' 
+else 
+	'SUCCESS']]></ee:set-variable>
+				<ee:set-variable variableName="processingStage" ><![CDATA[%dw 2.0
+output application/java
+---
+'COMPLETED']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="common-generate-response-subflow" doc:id="1ddcf1c7-7625-4a84-9e26-f159b1920510" name="common-generate-response-subflow"/>
+		<flow-ref doc:name="common-logger-subflow" doc:id="40149a5a-a3ed-4ce9-bbf6-eda578c69164" name="common-logger-subflow"/>
+	</sub-flow>
+<sub-flow name="common-prepare-log-variables-subflow" doc:id="0422d91d-8a70-459b-9622-ab0e0ef122c6">
+		<ee:transform doc:name="Transform Message" doc:id="a0074219-0f21-45e8-addb-83ff2738480e">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwl/common_functionality/log-variables.dwl" variableName="logVars" />
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="common-logger-subflow">
+		<ee:transform doc:name="Compose The Logging Message" doc:id="d0491ec6-aeba-4b53-9ae3-67b2d2a4f4a1">
+			<ee:variables>
+				<ee:set-variable variableName="commonLogMsg"><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+{	
+	dateTimeStamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss" },
+	application: Mule::p('api.name'),
+	(vars.inboundAttributes),
+	message: vars.logMessage,
+	processingStage: vars.processingStage,
+	transactionStatus: vars.transactionStatus	
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		
+		<choice doc:name="Check the log Level" doc:id="d0830e26-5339-42a6-9434-a77f957ed015">
+			<when expression='#[vars.logLevel == "INFO"]'>
+				<logger level="INFO" doc:name="INFO" doc:id="b3ce0d81-3fa8-41e7-a26c-7ea2d4ba9c3a" message="#[vars.commonLogMsg]" />
+			</when>
+			<when expression='#[vars.logLevel == "ERROR"]'>
+				<logger level="ERROR" doc:name="ERROR" doc:id="e5cb8963-759c-4c70-a056-43361d0d3f43" message="#[vars.commonLogMsg]" />
+			</when>
+			<when expression='#[vars.logLevel == "DEBUG"]'>
+				<logger level="DEBUG" doc:name="DEBUG" doc:id="db68f4cb-ac06-41c3-9121-c17fd463a065" message="#[vars.commonLogMsg]" />
+			</when>
+			<otherwise>
+				<logger level="WARN" doc:name="WARN" doc:id="22a53601-9c12-4b46-a9d5-76781397ad35" message="#[vars.commonLogMsg]" />			
+			</otherwise>
+		</choice>
+		<remove-variable variableName="commonLogMsg" doc:name="commonLogMsg" />
+		<remove-variable doc:name="logMessage" doc:id="817b0a9a-39f5-46a4-95f0-b5bcdf076fd3" variableName="logMessage" />
+	</sub-flow>
+	
+	<sub-flow name="common-generate-response-subflow" doc:id="e85c1e26-b60b-47c7-bb7e-a4cff80b45dc" >
+		<ee:transform doc:name="Generate Response" doc:id="5f4e5f01-91d4-421a-8dfd-858a5fff25b1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+
+(if (vars.error == null) payload else {'error': vars.errors})
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Generate Log Message" doc:id="48acc386-e049-4304-bb6d-c0ac4591f82a" >
+			<ee:variables >
+				<ee:set-variable variableName="logMessage" ><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+{
+	'code': (if (isEmpty(vars.httpStatus)) 200 else vars.httpStatus as Number),
+	'info': vars.transactionStatus,
+	(if (isEmpty(payload.errors)) {'responseData': vars.logMessage} else {'errors': payload.errors})
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	
+	<sub-flow name="common-error-response-subflow" doc:id="d99d9cef-e473-42f3-8c1d-b977517eca73">
+		<set-variable value="#['ERROR']" doc:name="logLevel" doc:id="be26f705-5e0a-406c-9d48-0b3f362bab88" variableName="logLevel" mimeType="application/java" />
+		<set-variable value="#[error]" doc:name="error" doc:id="583965fe-5918-4ddd-bed4-52d5773a5ad9" variableName="error" />
+		<ee:transform doc:name="Check If Error Is Propagated" doc:id="3fafdfd4-b5b2-4cf9-aeb4-c1bd99afdc59">
+			<ee:variables>
+				<ee:set-variable variableName="errors"><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+if (vars.errors == null and vars.error.errorMessage.payload != null and vars.error.errorMessage.payload is Object)(
+	if (isEmpty(vars.error.errorMessage.payload.errors))[
+		{
+			errorCode: vars.error.errorMessage.payload.errorCode,
+			shortDescription: vars.error.errorMessage.payload.message,
+			system: Mule::p('api.name'),
+			severity: 'medium',
+			source: vars.inboundAttributes['X-Channel']
+		}
+	] else vars.error.errorMessage.payload.errors
+) else vars.errors]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Compose Error Payload" doc:id="a1409e89-62b0-4548-8ae1-2e943907821b">
+			<ee:variables >
+				<ee:set-variable variableName="errors" ><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+if (vars.errors == null) 
+	{
+		code: if(vars.errorCode != null) vars.errorCode else error.errorType.identifier,
+		dateTime: now() as String { format: "yyyy-MM-dd'T'HH:mm:ss" },
+		message: if(vars.errorMessage != null) vars.errorMessage else 'Undefined error message.',
+		description: if(vars.errorDescription != null) vars.errorDescription else (error.description as String),
+		originalPayload: if(vars.originalPayload != null) vars.originalPayload else 'No payload set.',
+		correlationId: correlationId,
+	}
+ else vars.errors]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref name="common-finalize-subflow" doc:name="common-finalize-subflow" />
+	</sub-flow>
+
+</mule>
