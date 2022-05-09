@@ -3,7 +3,7 @@
 http://www.mulesoft.org/schema/mule/s4hana http://www.mulesoft.org/schema/mule/s4hana/current/mule-s4hana.xsd">
     <configuration-properties doc:name="Configuration properties" doc:id="89efc25f-9438-4a62-8e79-2a1b0506b6e1" file="properties/config-${mule.env}.yaml" doc:description="Loading Env properties file"/>
      <apikit:config name="lu-sl-sfdc-config" api="lu-sl-sfdc.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <!--<api-gateway:autodiscovery apiId="${api.id}" doc:name="API Autodiscovery" doc:id="a9459400-7e54-4c71-a18a-64db922b9e48" flowRef="tap-application-template-main" ignoreBasePath="true" /> -->
+    <api-gateway:autodiscovery apiId="${api.id}" doc:name="API Autodiscovery" doc:id="a9459400-7e54-4c71-a18a-64db922b9e48" flowRef="lu-sl-sfdc-main" ignoreBasePath="true" />
     <configuration doc:name="Configuration" doc:id="f52cad15-2a5f-4f73-a165-2a186f9e9a0a" defaultErrorHandler-ref="global-error-handler" doc:description="Define default Error Handler"/>
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="970842aa-63d8-40b3-84c1-15e537d2e874">
         <http:listener-connection host="${https.host}" port="${https.port}" connectionIdleTimeout="${https.timeout}" protocol="HTTPS">
