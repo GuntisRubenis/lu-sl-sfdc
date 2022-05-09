@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
- 
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
     <flow name="lu-sl-sfdc-main">
         <http:listener path="${https.path}" config-ref="HTTP_Listener_config">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -12,31 +11,31 @@
             </http:error-response>
         </http:listener>
         <flow-ref doc:name="log-apikit-entry" doc:id="b46e5013-709d-4f97-942e-0b052ad9c1ee" name="log-apikit-entry" />
-		<apikit:router config-ref="lu-sl-sfdc-config" />
-		<flow-ref doc:name="log-apikit-exit" doc:id="85553d99-40f0-40d6-9ce8-567466744cdc" name="log-apikit-exit" />
+        <apikit:router config-ref="lu-sl-sfdc-config" />
+        <flow-ref doc:name="log-apikit-exit" doc:id="85553d99-40f0-40d6-9ce8-567466744cdc" name="log-apikit-exit" />
     </flow>
     <flow name="delete:\deleteContact\(id):lu-sl-sfdc-config">
-		<flow-ref doc:name="delete-contact-subflow" doc:id="0fbb1fc5-52d7-49d7-819b-1ece3627b048" name="delete-contact-subflow"/>
+        <flow-ref doc:name="delete-contact-subflow" doc:id="0fbb1fc5-52d7-49d7-819b-1ece3627b048" name="delete-contact-subflow" />
     </flow>
     <flow name="delete:\deleteAccount\(id):lu-sl-sfdc-config">
-		<flow-ref doc:name="delete-account-subflow" doc:id="7b05b779-7e68-4216-910c-ed1f46fb8d20" name="delete-account-subflow"/>
+        <flow-ref doc:name="delete-account-subflow" doc:id="7b05b779-7e68-4216-910c-ed1f46fb8d20" name="delete-account-subflow" />
     </flow>
     <flow name="patch:\updateAccount\(id):lu-sl-sfdc-config">
-		<flow-ref doc:name="update-account-subflow" doc:id="0a78d8ad-0a4a-4afe-8fcb-891e53ae31c7" name="update-account-subflow"/>
-    </flow>
-    <flow name="patch:\updateConatact\(id):lu-sl-sfdc-config">
-		<flow-ref doc:name="update-contact-subflow" doc:id="6dc62ac8-9fb2-4d8d-b5b2-fab087f25610" name="update-contact-subflow"/>
+        <flow-ref doc:name="update-account-subflow" doc:id="0a78d8ad-0a4a-4afe-8fcb-891e53ae31c7" name="update-account-subflow" />
     </flow>
     <flow name="get:\getAllAccounts:lu-sl-sfdc-config">
-		<flow-ref doc:name="get-all-accounts-subflow" doc:id="f8d1d17d-ab37-4ac1-a67a-4a93be1909fd" name="get-all-accounts-subflow"/>
+        <flow-ref doc:name="get-all-accounts-subflow" doc:id="f8d1d17d-ab37-4ac1-a67a-4a93be1909fd" name="get-all-accounts-subflow" />
     </flow>
     <flow name="get:\getAllContacts:lu-sl-sfdc-config">
-		<flow-ref doc:name="get-all-contacts-subflow" doc:id="4167f73b-808a-45e7-a93c-be00cd0ab6bd" name="get-all-contacts-subflow"/>
+        <flow-ref doc:name="get-all-contacts-subflow" doc:id="4167f73b-808a-45e7-a93c-be00cd0ab6bd" name="get-all-contacts-subflow" />
     </flow>
     <flow name="post:\createAccount:lu-sl-sfdc-config">
-		<flow-ref doc:name="create-account-subflow" doc:id="8c648112-3066-4600-865d-fe0299253a5a" name="create-account-subflow"/>
+        <flow-ref doc:name="create-account-subflow" doc:id="8c648112-3066-4600-865d-fe0299253a5a" name="create-account-subflow" />
     </flow>
     <flow name="post:\createContact:lu-sl-sfdc-config">
-		<flow-ref doc:name="create-contact-subflow" doc:id="f844a400-8fb9-4075-9120-de70e8e41769" name="create-contact-subflow"/>
+        <flow-ref doc:name="create-contact-subflow" doc:id="f844a400-8fb9-4075-9120-de70e8e41769" name="create-contact-subflow" />
+    </flow>
+    <flow name="patch:\updateContact\(id):lu-sl-sfdc-config">
+		<flow-ref doc:name="update-contact-subflow" doc:id="3db9f606-5fdf-47ba-8a20-0bc3f4a9e1c2" name="update-contact-subflow"/>
     </flow>
 </mule>
