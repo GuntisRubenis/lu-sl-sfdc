@@ -36,6 +36,6 @@
         <flow-ref doc:name="create-contact-subflow" doc:id="f844a400-8fb9-4075-9120-de70e8e41769" name="create-contact-subflow" />
     </flow>
     <flow name="patch:\updateContact\(id):lu-sl-sfdc-config">
-		<flow-ref doc:name="update-contact-subflow" doc:id="3db9f606-5fdf-47ba-8a20-0bc3f4a9e1c2" name="update-contact-subflow"/>
+        <flow-ref doc:name="update-contact-subflow" doc:id="3db9f606-5fdf-47ba-8a20-0bc3f4a9e1c2" name="update-contact-subflow" />
     </flow>
 </mule>

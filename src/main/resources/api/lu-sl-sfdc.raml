@@ -5,9 +5,10 @@ mediaType: [application/json]
 protocols: [HTTPS]
 version: v1
 
+securitySchemes:
+  ClientId_Enforcement_policy: !include securitySchemas/clientSecretEnforcement.raml
 
-types:
-
+securedBy: ClientId_Enforcement_policy
 /getAllAccounts:
   get:
     displayName: retrieve Accounts
