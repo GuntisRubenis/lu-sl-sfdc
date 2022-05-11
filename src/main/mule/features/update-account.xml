@@ -12,7 +12,9 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-[payload ++ {"Id": attributes.uriParams.id}]]]></ee:set-payload>
+[payload ++ {"Id": attributes.uriParams.id,
+	"integration__c": "yes"
+}] ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<salesforce:update doc:name="Update Account" doc:id="e0ee1599-b216-49b8-9cc2-de34e76dbac0" config-ref="Salesforce_Config" type="Account"/>

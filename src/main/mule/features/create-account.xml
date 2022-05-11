@@ -12,7 +12,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-[payload]]]></ee:set-payload>
+[payload ++ {"integration__c": "yes"}]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<salesforce:create type="Account" doc:name="Create Account" doc:id="b8d80199-8df9-4aae-a745-661a4d5f0909" config-ref="Salesforce_Config"/>
