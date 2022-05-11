@@ -22,5 +22,12 @@ http://www.mulesoft.org/schema/mule/s4hana http://www.mulesoft.org/schema/mule/s
 	<global-property doc:name="Global Property" doc:id="95dd5873-c17c-41c4-8a24-efa71515a7e5" name="mule.vault.key" value="tapmuletapmule" />
 	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="d84cb7da-bdb1-48a5-98e7-363d8e0cb540" >
 		<salesforce:basic-connection username="${sfdc.username}" password="${sfdc.password}" securityToken="${sfdc.token}" />
-	</salesforce:sfdc-config>    
+	</salesforce:sfdc-config>
+	<http:request-config name="HTTP_Request_configuration_SAP_System_API" doc:name="HTTP Request configuration" doc:id="b26a0ca9-7f6f-42a2-80f0-63a374ab01c6" basePath="${sap.basepath}" >
+		<http:request-connection protocol="${sap.protocol}" host="${sap.host}" port="${sap.port}" >
+			<http:authentication >
+				<http:basic-authentication username="${sap.auth.username}" password="${sap.auth.password}" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>    
 </mule>

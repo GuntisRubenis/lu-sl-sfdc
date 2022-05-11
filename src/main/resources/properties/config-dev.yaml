@@ -16,3 +16,12 @@ sfdc:
   username: "GuntisRubenis@lu.com"
   password: "Lutest2022"
   token: "cPfgSi4usy4xlWbSQT0pn9fWf"
+  
+sap:
+  protocol: "HTTPS"
+  host: "lu-sl-sap.us-e2.cloudhub.io"
+  port: "443"
+  basepath: "/api/v1"
+  auth:
+    username: "test"
+    password: "test"

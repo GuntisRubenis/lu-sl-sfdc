@@ -1,22 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:s4hana="http://www.mulesoft.org/schema/mule/s4hana"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:s4hana="http://www.mulesoft.org/schema/mule/s4hana" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/s4hana http://www.mulesoft.org/schema/mule/s4hana/current/mule-s4hana.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<sub-flow name="delete-contact-subflow" doc:id="92fd9fd8-ad81-4bf4-9211-214a357a23b8" >
 		<set-variable value="#[attributes.uriParams.id]" doc:name="id" doc:id="c095502a-61ad-4c61-900d-af759161da0c" variableName="id" />
 		<ee:transform doc:name="Set Delete Payload" doc:id="da69ad3b-83bc-4e19-9596-4315e53b6d19" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sfdcPayload" ><![CDATA[%dw 2.0
 output application/json
 ---
-[vars.id] ]]></ee:set-payload>
-			</ee:message>
+[vars.id] ]]></ee:set-variable>
+			</ee:variables>
 		</ee:transform>
-		<salesforce:delete doc:name="Delete Conatact By Id" doc:id="e6625780-fd2f-421e-ad63-3f709c503553" config-ref="Salesforce_Config" />
+		<salesforce:query doc:name="Query Contact by id" doc:id="03c1a1a1-daf4-4a42-b02f-f5c6a81ab82e" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[select Id, AccountId, isDeleted, Birthdate, Business_Partner_Address_id__c, Business_Partner_id__c, City__c, OwnerId, Country__c, 
+CreatedById, Email, HomePhone, House_Number__c, Languages__c, LastModifiedById, MobilePhone, Name, 
+Postal_Code__c, Street__c, Time_Zone__c from Contact where Id = ':id']]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	"id" : vars.id
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="sfdcId" doc:id="6da3e7eb-abcc-478f-9229-522869abb65c">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="sfdcId"><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="GET: All Business Partner Addresses" doc:id="840f1646-c011-4193-8258-42de07b4a8fc" config-ref="HTTP_Request_configuration_SAP_System_API" path="/getAllBusinessPartnerAddresses" >
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"id" : vars.sfdcId.Business_Partner_id__c[0]
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Filter" doc:id="70c4ff48-2ab5-4136-9ec2-1420ba059f42">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="sapId"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"BusinessPartner": payload.BusinessPartner[0],
+	"AddressId": payload.AddressID[0]
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Copy_of_Choice" doc:id="bc7c1ac7-b971-4212-93cf-3c66e55d5133">
+			<when expression="#[!isEmpty(vars.sapId)]">
+				<http:request method="DELETE" doc:name="Delete Business Partner Address" doc:id="462f6e10-5265-40d5-a954-cf80b5bfef9a" config-ref="HTTP_Request_configuration_SAP_System_API" path="/deleteBusinessPartnerAddress/{id}">
+					<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"id" : vars.sapId.BusinessPartner
+}]]]></http:uri-params>
+					<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"addressId" : vars.sapId.AddressId
+}]]]></http:query-params>
+				</http:request>
+			</when>
+		</choice>
+		<salesforce:delete doc:name="Delete Conatact By Id" doc:id="e6625780-fd2f-421e-ad63-3f709c503553" config-ref="Salesforce_Config">
+			<salesforce:ids><![CDATA[#[vars.sfdcPayload]]]></salesforce:ids>
+		</salesforce:delete>
 		<ee:transform doc:name="Set Payload to JSON" doc:id="202f3ca8-e044-4eb3-a26e-d1a0b7c37e1d" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
