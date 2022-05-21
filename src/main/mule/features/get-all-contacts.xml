@@ -11,9 +11,8 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		<choice doc:name="Choice" doc:id="795ea13f-a701-40ee-b3c5-d4341314cc23" >
 			<when expression="#[!isEmpty(vars.id)]" >
 				<salesforce:query doc:name="GET SFDC Contact By Id" doc:id="7505bf84-a965-41d6-999a-ee3bc023a059" config-ref="Salesforce_Config" >
-					<salesforce:salesforce-query ><![CDATA[select Id, AccountId, isDeleted, Birthdate, Business_Partner_Address_id__c, Business_Partner_id__c, City__c, OwnerId, Country__c, 
-CreatedById, Email, HomePhone, House_Number__c, Languages__c, LastModifiedById, MobilePhone, Name, 
-Postal_Code__c, Street__c, Time_Zone__c from Contact where Id = ':id']]></salesforce:salesforce-query>
+					<salesforce:salesforce-query ><![CDATA[select Id, AccountId, isDeleted, Business_Partner_Address_id__c, Business_Partner_id__c, City__c, Country__c, House_Number__c, Languages__c, LastModifiedById, MobilePhone, Name, 
+Postal_Code__c, Street__c from Contact where Id = ':id']]></salesforce:salesforce-query>
 					<salesforce:parameters ><![CDATA[#[output application/java
 ---
 {
@@ -23,9 +22,8 @@ Postal_Code__c, Street__c, Time_Zone__c from Contact where Id = ':id']]></salesf
 			</when>
 			<otherwise >
 				<salesforce:query-all doc:name="GET All SFDC Contacts" doc:id="8a457241-4dfa-400d-9a8b-020cb932eb2d" config-ref="Salesforce_Config" >
-					<salesforce:salesforce-query ><![CDATA[select Id, AccountId, Birthdate, isDeleted, Business_Partner_Address_id__c, Business_Partner_id__c, City__c, OwnerId, Country__c, 
-CreatedById, Email, HomePhone, House_Number__c, Languages__c, LastModifiedById, MobilePhone, Name, 
-Postal_Code__c, Street__c, Time_Zone__c from Contact]]></salesforce:salesforce-query>
+					<salesforce:salesforce-query ><![CDATA[select Id, AccountId, isDeleted, Business_Partner_Address_id__c, Business_Partner_id__c, City__c, Country__c, House_Number__c, Name, 
+Postal_Code__c, Street__c from Contact]]></salesforce:salesforce-query>
 				</salesforce:query-all>
 			</otherwise>
 		</choice>

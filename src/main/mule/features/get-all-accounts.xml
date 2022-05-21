@@ -11,11 +11,8 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		<choice doc:name="Choice" doc:id="8c0cb86e-7ff1-4065-b713-558583f5afb5" >
 			<when expression="#[!isEmpty(vars.id)]">
 				<salesforce:query doc:name="GET SFDC Account By Id" doc:id="e169eb8b-e3f2-4850-bd8b-96ee0273e888" config-ref="Salesforce_Config">
-					<salesforce:salesforce-query ><![CDATA[select Id, Name, isDeleted, AccountNumber, OwnerId, Site, AccountSource, Active__c, AnnualRevenue, 
-BillingAddress, Blocked__c, Business_Partner_id__c, CleanStatus, Contact_Language__c, Country__c, CreatedById, CustomerPriority__c, 
-DandbCompanyId, DunsNumber, Jigsaw, Description, DOB__c, NumberOfEmployees, Fax, First_Name__c, Gender__c, Identity_Number__c,
-Industry, Language__c, LastModifiedById, Last_Name__c, NumberofLocations__c, OperatingHoursId, Ownership, ParentId, 
-Phone, 	Rating, ShippingAddress, Supplier__c, Type, integration__c, (select Id from Contacts) from Account where Id = ':id']]></salesforce:salesforce-query>
+					<salesforce:salesforce-query ><![CDATA[select Id, Name, isDeleted, Blocked__c, Business_Partner_id__c, Country__c, First_Name__c, Gender__c, Identity_Number__c,
+Industry, Language__c, Last_Name__c, Supplier__c, integration__c, (select Id from Contacts) from Account where Id = ':id']]></salesforce:salesforce-query>
 					<salesforce:parameters ><![CDATA[#[output application/java
 ---
 {
@@ -25,11 +22,8 @@ Phone, 	Rating, ShippingAddress, Supplier__c, Type, integration__c, (select Id f
 			</when>
 			<otherwise >
 				<salesforce:query-all doc:name="GET All SFDC Accounts" doc:id="41faa2d9-0b30-430b-8ac5-03ca6a5f6a4b" config-ref="Salesforce_Config">
-			<salesforce:salesforce-query><![CDATA[select Id, Name, isDeleted, AccountNumber, OwnerId, Site, AccountSource, Active__c, AnnualRevenue, 
-BillingAddress, Blocked__c, Business_Partner_id__c, CleanStatus, Contact_Language__c, Country__c, CreatedById, CustomerPriority__c, 
-DandbCompanyId, DunsNumber, Jigsaw, Description, DOB__c, NumberOfEmployees, Fax, First_Name__c, Gender__c, Identity_Number__c,
-Industry, Language__c, LastModifiedById, Last_Name__c, NumberofLocations__c, OperatingHoursId, Ownership, ParentId, 
-Phone, 	Rating, ShippingAddress, Supplier__c, Type, integration__c, (select Id from Contacts) from Account]]></salesforce:salesforce-query>
+			<salesforce:salesforce-query><![CDATA[select Id, Name, isDeleted, Blocked__c, Business_Partner_id__c, Country__c, First_Name__c, Gender__c, Identity_Number__c,
+Industry, Language__c, Last_Name__c, Supplier__c, integration__c, (select Id from Contacts) from Account]]></salesforce:salesforce-query>
 		</salesforce:query-all>
 			</otherwise>
 		</choice>

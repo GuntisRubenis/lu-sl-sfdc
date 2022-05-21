@@ -19,50 +19,6 @@ output application/json
 [vars.id] ]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<salesforce:query doc:name="Query Account by id" doc:id="7015f294-96ce-4c83-9320-bc9e186b8f0e" config-ref="Salesforce_Config">
-			<salesforce:salesforce-query ><![CDATA[select Id, Name, isDeleted, AccountNumber, OwnerId, Site, AccountSource, Active__c, AnnualRevenue, 
-BillingAddress, Blocked__c, Business_Partner_id__c, CleanStatus, Contact_Language__c, Country__c, CreatedById, CustomerPriority__c, 
-DandbCompanyId, DunsNumber, Jigsaw, Description, DOB__c, NumberOfEmployees, Fax, First_Name__c, Gender__c, Identity_Number__c,
-Industry, Language__c, LastModifiedById, Last_Name__c, NumberofLocations__c, OperatingHoursId, Ownership, ParentId, 
-Phone, 	Rating, ShippingAddress, Supplier__c, Type, integration__c, (select Id from Contacts) from Account where Id = ':id']]></salesforce:salesforce-query>
-			<salesforce:parameters ><![CDATA[#[output application/java
----
-{
-	"id" : vars.id
-}]]]></salesforce:parameters>
-		</salesforce:query>
-		<ee:transform doc:name="sfdcId" doc:id="3f38c4dd-8cc8-4927-8b9e-fa6bc1ae0508" >
-			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="sfdcId" ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<http:request method="GET" doc:name="GET: All Business Partners" doc:id="37dfcce0-880e-4093-ad0b-3c3fe49f8221" config-ref="HTTP_Request_configuration_SAP_System_API" path="/getAllBusinessPartners"/>
-		<ee:transform doc:name="Filter" doc:id="01c51923-7161-4b90-a82c-0dfedf6c44d2" >
-			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="sapId" ><![CDATA[%dw 2.0
-output application/json
----
-payload filter (item, index) -> (item.BusinessPartner == vars.sfdcId.Business_Partner_id__c[0]) ]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<choice doc:name="Choice" doc:id="bab1a62c-f457-4b03-a0dc-fce328756b91" >
-			<when expression="#[!isEmpty(vars.sapId)]">
-				<http:request method="DELETE" doc:name="Delete Business Partner" doc:id="4c5c1da5-9c5c-419d-bd9a-2643cd0aad70" config-ref="HTTP_Request_configuration_SAP_System_API" path="/deleteBusinessPartner/{id}">
-					<http:uri-params ><![CDATA[#[output application/java
----
-{
-	"id" : vars.sapId.BusinessPartner[0]
-}]]]></http:uri-params>
-				</http:request>
-			</when>
-		</choice>
 		<salesforce:delete doc:name="Delete Account By Id" doc:id="b9827ad1-2685-4e65-a60d-2f29e834db5b" config-ref="Salesforce_Config">
 			<salesforce:ids ><![CDATA[#[vars.sfdcPayload]]]></salesforce:ids>
 		</salesforce:delete>
