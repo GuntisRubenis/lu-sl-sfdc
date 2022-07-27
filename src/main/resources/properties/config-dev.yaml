@@ -1,7 +1,6 @@
 api:
   name: "lu-sl-sfdc"
-  #id: "17817535"
-  id: "17852038"
+  id: ""
   version: "v1"
   
 https:
