@@ -28,14 +28,14 @@
 				<extensions>true</extensions>
 				<configuration>
 					<cloudHubDeployment>
-						<uri>${anypoint.platform.eu1.base_uri}</uri>
-						<muleVersion>${app.runtime}</muleVersion>
+						<uri>https://anypoint.mulesoft.com/</uri>
+						<muleVersion>${mule.version}</muleVersion>
 						<username>${anypoint.username}</username>
 						<password>${anypoint.password}</password>
-						<applicationName>${project.artifactId}-${api.version}-${env}</applicationName>
-						<environment>${anypoint.env}</environment>
-						<workerType>${anypoint.workertype}</workerType>
-						<workers>${anypoint.numberofworkers}</workers>
+						<applicationName>${app.name}</applicationName>
+						<environment>${env}</environment>
+						<workerType>${workertype}</workerType>
+						<workers>${numberofworkers}</workers>
 						<deploymentTimeout>2000000</deploymentTimeout>
 						<objectStoreV2>true</objectStoreV2>
 						<properties>
@@ -43,10 +43,10 @@
 							<mule.vault.key>${mule.vault.key}</mule.vault.key>
 							<anypoint.platform.client_secret>${anypoint.platform.client_secret}</anypoint.platform.client_secret>
 							<anypoint.platform.client_id>${anypoint.platform.client_id}</anypoint.platform.client_id>
-							<anypoint.platform.base_uri>${anypoint.platform.eu1.base_uri}</anypoint.platform.base_uri>
+							<!--<anypoint.platform.base_uri>${anypoint.platform.eu1.base_uri}</anypoint.platform.base_uri>
 							<anypoint.platform.analytics_base_uri>${anypoint.platform.eu1.analytics_base_uri}</anypoint.platform.analytics_base_uri>
 							<anypoint.platform.config.analytics.agent.enabled>${anypoint.platform.analytics.agent.enabled}</anypoint.platform.config.analytics.agent.enabled>
-							<anypoint.platform.visualizer.layer>${anypoint.visualizer.layer}</anypoint.platform.visualizer.layer>
+							<anypoint.platform.visualizer.layer>${anypoint.visualizer.layer}</anypoint.platform.visualizer.layer> -->
 						</properties>
 						<region>${anypoint.region}</region>
 						<businessGroup>${anypoint.bg}</businessGroup>
